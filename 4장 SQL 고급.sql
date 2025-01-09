@@ -175,3 +175,149 @@ FROM
 	`SALES`
 WHERE
 	`year`=2020;
+    
+#실습 4-10
+select @@sql_mode;
+set session sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+select * from `sales` group by `uid`;
+select * from `sales` group by `year`;
+select * from `sales` group by `uid`,`year`;
+select `uid`,count(*) as `건수` from `sales` group by `uid`;
+select `uid`,sum(`sale`) as `합계` from `sales` group by `uid`;
+SELECT `uid`, AVG(sale) AS `평균` FROM `Sales` GROUP BY `uid`;
+
+SELECT `uid`, `year`, SUM(sale) AS `합계`
+FROM `Sales`
+GROUP BY `uid`, `year`;
+
+SELECT `uid`, `year`, SUM(sale) AS `합계`
+FROM `Sales`
+GROUP BY `uid`, `year`
+ORDER BY `year` ASC, `합계` DESC;
+SELECT `uid`, `year`, SUM(sale) AS `합계`
+
+FROM `Sales`
+WHERE `sale` >= 50000
+GROUP BY `uid`, `year`
+ORDER BY `합계` DESC;
+
+
+#실습 4-11
+select `uid`, sum(`sale`) as `합계`
+from `sales`
+group by `uid`
+having `합계` >=200000;
+    
+SELECT `uid`, `year`, SUM(sale) AS `합계`
+FROM `Sales`
+WHERE `sale` >= 100000
+GROUP BY `uid`, `year`
+HAVING `합계` >= 200000
+ORDER BY `합계` DESC;
+
+#실습 4-12
+create TABLE `Sales2` Like `sales`;
+insert into `Sales2` select * from `sales`;
+update `Sales2` set `year` = `year`+3;
+select * from `Sales2`;
+
+select * from `sales`
+union
+select * from `Sales2`;
+
+SELECT * FROM `Sales` UNION SELECT * FROM `Sales2`;
+SELECT * FROM `Sales` WHERE `sale` >= 100000
+UNION
+SELECT * FROM `Sales2` WHERE `sale` >= 100000;
+
+SELECT `uid`, `year`, `sale` FROM Sales
+UNION
+SELECT `uid`, `year`, `sale` FROM Sales2;
+
+SELECT `uid`, `year`, SUM(sale) AS `합계`
+FROM `Sales`
+GROUP BY `uid`, `year`
+UNION
+SELECT `uid`, `year`, SUM(sale) AS `합계`
+FROM `Sales2`
+GROUP BY `uid`, `year`
+ORDER BY `year` ASC, `합계` DESC;
+
+#실습 4-13
+SELECT * FROM `Sales` INNER JOIN `Member` ON `Sales`.uid = `Member`.uid;
+SELECT * FROM `Member` INNER JOIN `Department` ON `Member`.dep = `Department`.depNo;
+SELECT
+	*
+    FROM `member` AS A
+    JOIN `department` as b
+    on a.dep = b.depNo;
+    
+    SELECT
+	*
+    FROM `sales` AS A
+    JOIN `member` as b
+    on a.uid = b.uid;
+    
+SELECT * FROM `Sales` AS a, `Member` AS b WHERE a.uid = b.uid;
+SELECT * FROM `Member` AS a, `Department` AS b WHERE a.dep = b.depNo;
+SELECT a.`seq`, a.`uid`, `sale`, `name`, `pos` FROM `Sales` AS a
+JOIN `Member` AS b ON a.`uid` = b.`uid`;
+SELECT a.`seq`, a.`uid`, `sale`, `name`, `pos` FROM `Sales` AS a
+JOIN `Member` AS b USING (uid);
+SELECT a.`seq`, a.`uid`, `sale`, `name`, `pos` FROM `Sales` AS a
+JOIN `Member` AS b ON a.`uid` = b.`uid`
+WHERE `sale` >= 100000;
+SELECT a.`seq`, a.`uid`, b.`name`, b.`pos`, `year`, SUM(`sale`) AS `합계` FROM `Sales` AS a
+JOIN `Member` AS b ON a.uid = b.uid
+GROUP BY a.`uid`, a.`year` HAVING `합계` >= 100000
+ORDER BY a.`year` ASC, `합계` DESC;
+SELECT * FROM `Sales` AS a
+JOIN `Member` AS b ON a.uid = b.uid
+JOIN `Department` AS c ON b.dep = c.depNo;
+SELECT a.`seq`, a.`uid`, a.`sale`, b.`name`, b.`pos`, c.`name` FROM `Sales` AS a
+JOIN `Member` AS b ON a.uid = b.uid
+JOIN `Department` AS c ON b.dep = c.depNo;
+SELECT a.`seq`, a.`uid`, a.`sale`, b.`name`, b.`pos`, c.`name` FROM `Sales` AS a
+JOIN `Member` AS b ON a.uid = b.uid
+JOIN `Department` AS c ON b.dep = c.depNo
+WHERE `sale` > 100000
+ORDER BY `sale` DESC;
+
+#실습 4-14
+insert into `sales` (`uid`,`year`,`month`,`sale`) values('a201',2020,2,15000);
+SELECT * FROM `Sales` AS a LEFT JOIN `Member` AS b ON a.uid = b.uid;
+select * from `sales` as a right join `member` AS b on a.uid = b.uid; # inner, left, right 차이 확인
+SELECT a.seq, a.uid, `sale`, `name`, `pos` FROM Sales AS a
+LEFT JOIN Member AS b USING(uid);
+
+SELECT a.seq, a.uid, `sale`, `name`, `pos` FROM Sales AS a 
+right join member AS b using(UID);
+
+#실습 4-15
+select `UID`,a.`name`,`pos`,b.`name` 
+FROM `member` AS A
+JOIN `department` as b
+on a.dep = b.depNo;
+
+#실습4-16
+select sum(`sale`) as `김유신 2019년 매출 합`
+from `sales`as a
+join `Member` as b on a.uid = b.uid
+where `name` = '김유신' and
+`year` = 2019;
+
+#실습 4-17
+select 
+	b.`name`,
+    c.`name`,
+    b.`pos`,
+    a.`year`,
+    sum(`sale`) as `매출합`
+from `sales` as a
+join `member` as b on a.uid = b.uid
+join `department` as c on b.dep = c.depNo
+where `year` = 2019 and `sale` >=50000
+group by a.`uid`
+having `매출합` >=100000
+order by `매출합` desc;
