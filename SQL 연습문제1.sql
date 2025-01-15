@@ -77,7 +77,7 @@ select * from `product`;
 select `company` from `product`;
 
 #실습 1-8
-select DISTINCT `company` from `product`; #모름
+select DISTINCT `company` from `product`;
 
 #실습 1-9
 select  `prodName`,`price` from `product`;
