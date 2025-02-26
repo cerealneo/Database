@@ -145,7 +145,7 @@ UPDATE
 SET 
     `regTotal` = (`regAttenScore` + `regMidScore` + `regFinalScore`) / 3;
 
-#문제8. 수강 테이블에 총점을 기준으로 A ~ F 등급을 입력하시오. 
+#문제8. 수강 테이블에 총점을 기준으로 A ~ F 등급을 입력하시오. department
 UPDATE 
     Register
 SET 
