@@ -71,9 +71,9 @@ SELECT
     s.depNo, 
     d.depName
 FROM 
-    University.Student s
+    student AS s
 JOIN 
-    University.Department d ON s.depNo = d.depNo;
+    department AS d ON s.depNo = d.depNo;
 
 #문제2. 모든 교수의 교수번호, 이름, 휴대폰, 학과번호, 학과명을 조회하시오. 
 SELECT 
@@ -83,9 +83,9 @@ SELECT
     p.depNo, 
     d.depName
 FROM 
-    University.Professor p
+    professor AS p
 JOIN 
-    University.Department d ON p.depNo = d.depNo;
+    Department AS d ON p.depNo = d.depNo;
 
 #문제3. 모든 강좌의 강좌번호, 강좌명, 담당교수명, 휴대폰을 조회하시오. 
 SELECT 
@@ -94,9 +94,9 @@ SELECT
     p.proName, 
     p.proHp
 FROM 
-    University.Lecture l
+    Lecture l
 JOIN 
-    University.Professor p ON l.proNo = p.proNo;
+    Professor p ON l.proNo = p.proNo;
 
 #문제4. 모든 강좌의 강좌번호, 강좌명, 담당교수 번호, 담당교수명, 휴대폰, 학과번호, 학과명을 조회하시오. 
 SELECT 
@@ -108,11 +108,11 @@ SELECT
     p.depNo, 
     d.depName
 FROM 
-    University.Lecture l
+    Lecture l
 JOIN 
-    University.Professor p ON l.proNo = p.proNo
+    Professor AS p ON l.proNo = p.proNo
 JOIN 
-    University.Department d ON p.depNo = d.depNo;
+    department AS d ON p.depNo = d.depNo;
 
 #문제5. 모든 수강 내역에서 학생번호, 학생명, 강좌번호, 강좌명, 교수번호, 교수명을 조회하시오. 
 SELECT 
@@ -123,53 +123,46 @@ SELECT
     r.proNo, 
     p.proName
 FROM 
-    University.Register r
+    register AS r
 JOIN 
-    University.Student s ON r.stdNo = s.stdNo
+    student AS s ON r.stdNo = s.stdNo
 JOIN 
-    University.Lecture l ON r.lecNo = l.lecNo AND r.proNo = l.proNo
+    lecture AS l ON r.lecNo = l.lecNo
 JOIN 
-    University.Professor p ON r.proNo = p.proNo;
+    professor AS p ON r.proNo = p.proNo;
 
 #문제6. 수강 테이블에 출석점수, 중간고사점수, 기말고사 점수를 임의로 입력하시오.(1~100 사이)
 UPDATE 
-    University.Register
+    Register
 SET 
-    regAttenScore = FLOOR(RAND() * 100) + 1, 
-    regMidScore = FLOOR(RAND() * 100) + 1, 
-    regFinalScore = FLOOR(RAND() * 100) + 1;
+	`regAttenScore` = CEIL(RAND() * 100),
+	`regMidScore`   = CEIL(RAND() * 100),
+	`regFinalScore` = CEIL(RAND() * 100);
 
 #문제7. 수강 테이블에 출석점수, 중간고사점수, 기말고사 점수를 모두 더한 평균을 구해 총점에 입력하시오. 
 UPDATE 
-    University.Register
+    Register
 SET 
-    regTotal = regAttenScore + regMidScore + regFinalScore;
+    `regTotal` = (`regAttenScore` + `regMidScore` + `regFinalScore`) / 3;
 
 #문제8. 수강 테이블에 총점을 기준으로 A ~ F 등급을 입력하시오. 
 UPDATE 
-    University.Register
+    Register
 SET 
-    regGrade = CASE 
-        WHEN regTotal >= 90 THEN 'A'
-        WHEN regTotal >= 80 THEN 'B'
-        WHEN regTotal >= 70 THEN 'C'
-        WHEN regTotal >= 60 THEN 'D'
-        WHEN regTotal >= 50 THEN 'E'
-        ELSE 'F'
-    END;
+   `regGrade` = 
+		if(`regTotal` >= 90, 'A', 
+		if(`regTotal` >= 80, 'B',
+		if(`regTotal` >= 70, 'C',
+		if(`regTotal` >= 60, 'D', 'F'))));
 
 #문제9. 수강 테이블에서 총점이 가장 큰 점수를 조회하시오. 
-SELECT 
-    MAX(regTotal) AS maxTotal
-FROM 
-    University.Register;
+SELECT MAX(`regTotal`) FROM `Register`;
+
+SELECT `regTotal` FROM `Register` ORDER BY `regTotal` DESC LIMIT 1;
     
 #문제10. 수강 테이블에서 정우성 학생의 총점의 평균을 조회하시오.
 SELECT 
-    AVG(regTotal) AS avgTotal
-FROM 
-    University.Register r
-JOIN 
-    University.Student s ON r.stdNo = s.stdNo
-WHERE 
-    s.stdName = '정우성';
+	AVG(`regTotal`) 
+FROM `Register` AS a
+JOIN `Student` AS b ON a.stdNo = b.stdNo
+WHERE `stdName`='정우성';
